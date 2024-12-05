@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css"">
+    <title>login</title>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label for="gmail">Gmail</label>
+                <input type="email" id="gmail" name="gmail" placeholder="Enter your Gmail" required >
+            </div>
+            <div class="form-group">
+                <label for="password">password</label>
+                <input type="password"  id="password" name="password" placeholder="Enter your password" >
+            </div>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+        <p>Don't have an account? <a href="/signup">Sign up</a></p>
+    </div>
+</body>
+</html>
