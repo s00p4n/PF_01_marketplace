@@ -1,0 +1,59 @@
+<html>
+<body>
+<form action="/submit-item" method="POST" onsubmit="return validateForm()">
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <input type="text" class="form-control" id="description" name="description">
+    </div>
+
+    <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input type="number" class="form-control" id="price" name="price" step="1" min="0">
+    </div>
+
+    <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" class="form-control" id="stock" name="stock" min="0">
+    </div>
+
+    <div class="mb-3">
+        <label for="image" class="form-label">Image URL</label>
+        <input type="text" class="form-control" id="image" name="image">
+    </div>
+
+    <!-- Seller email automatically populated from session -->
+    <input type="hidden" id="sellerEmail" name="sellerEmail" value="<%= userEmail %>">
+
+    <button type="submit" class="btn btn-primary">Soumettre</button>
+</form>
+
+<script>
+    function validateForm() {
+        var description = document.getElementById("description").value.trim();
+        var price = document.getElementById("price").value.trim();
+        var stock = document.getElementById("stock").value.trim();
+        var image = document.getElementById("image").value.trim();
+        var sellerEmail = document.getElementById("sellerEmail").value.trim();
+
+        if (description === "" || price === "" || stock === "" || image === "" || sellerEmail === "") {
+            alert("Veuillez remplir tous les champs.");
+            return false;
+        }
+
+        if (isNaN(price) || Number(price) <= 0) {
+            alert("Veuillez entrer un prix valide.");
+            return false;
+        }
+
+        if (isNaN(stock) || Number(stock) < 0) {
+            alert("Veuillez entrer une quantité de stock valide.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+
+</body>
+</html>

@@ -25,7 +25,15 @@ const LogInSchema = new mongoose.Schema({
         required : true
     }
 });
-
+const ItemSchema = new mongoose.Schema({
+    Price: { type: Number, required: true },
+    Description: { type: String, required: true },
+    SellerEmail: { type: String, required: true },
+    Stock: { type: Number, required: true },
+    Image: { type: String, required: true }
+}, {
+    collection: 'item'
+});
 const collection = new mongoose.model("users", LogInSchema);
-
-module.exports = collection;
+const itemSchema = new mongoose.model("item", ItemSchema);
+module.exports = {collection,itemSchema};
