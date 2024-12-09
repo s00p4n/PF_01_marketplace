@@ -25,40 +25,44 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Welcome to home page</h1>
-    <button onclick="iflogged()">Go to New Page</button>
-    <a class="btn" href="/login">connexion</a>
+<div class="container">
+    <p><strong>Balance:</strong> $<%= balance %></p> <!-- Display the user's balance -->
+</div>
+<h1>Welcome to home page</h1>
+<button onclick="iflogged()">Go to New Page</button>
+<a class="btn" href="/login">connexion</a>
 
-    <table class="table table-striped" style="width:100%">
-        <thead>
-        <tr>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Seller Email</th>
-            <th>Stock</th>
-            <th>Image</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% if (Array.isArray(items) && items.length > 0) { %>
-            <% items.forEach(item => { %>
-                <tr>
-                    <td><%= item.Price %></td> <!-- Display Price -->
-                    <td><%= item.Description %></td> <!-- Display Description -->
-                    <td><%= item.SellerEmail %></td> <!-- Display Seller Email -->
-                    <td><%= item.Stock %></td> <!-- Display Stock -->
-                    <td><img src="<%= item.Image %>" alt="Item Image" width="100"></td> <!-- Display Image -->
-                </tr>
-            <% }) %>
-        <% } else { %>
+<table class="table table-striped" style="width:100%">
+    <thead>
+    <tr>
+        <th>Price</th>
+        <th>Description</th>
+        <th>Seller Email</th>
+        <th>Stock</th>
+        <th>Name</th>
+        <th>Image</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% if (Array.isArray(items) && items.length > 0) { %>
+        <% items.forEach(item => { %>
+            <% if (item.Stock >= 1) { %> <!-- Only show item if stock >= 1 -->
             <tr>
-                <td colspan="5">No items found.</td> <!-- If no items are found -->
+                <td><%= item.Price %></td> <!-- Display Price -->
+                <td><%= item.Description %></td> <!-- Display Description -->
+                <td><%= item.SellerEmail %></td> <!-- Display Seller Email -->
+                <td><%= item.Stock %></td> <!-- Display Stock -->
+                <td><a href="/item/<%= item._id %>"><%= item.Name %></a></td> <!-- Display Item Name -->
+                <td><img src="<%= item.Image %>" alt="Item Image" width="100"></td> <!-- Display Image -->
             </tr>
-        <% } %>
-        </tbody>
-    </table>
-
-
-
+            <% } %>
+        <% }) %>
+    <% } else { %>
+        <tr>
+            <td colspan="6">No items available.</td> <!-- If no items are found -->
+        </tr>
+    <% } %>
+    </tbody>
+</table>
 </body>
 </html>
