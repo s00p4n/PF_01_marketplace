@@ -130,7 +130,7 @@ table img {
 }
 
 .menu {
-    display: inline-block; /* Для кнопок в строку */
+    display: inline-block;
     padding: 10px 10px;
     font-size: 10px;
     color: #EEEEEE;
@@ -139,13 +139,13 @@ table img {
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
-    text-decoration: none; /* Убираем подчеркивание */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Плавные эффекты */
+    text-decoration: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .menu:hover {
-    background-color: #00ADB5; /* Изменение цвета при наведении */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень при наведении */
+    background-color: #33C4CC;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .menu:active {
@@ -160,7 +160,7 @@ table img {
 .menu a:hover {
     text-decoration: underline;
 }
-/* General container styling for the form */
+
 .form-container {
     max-width: 400px;
     margin: 20px auto;
