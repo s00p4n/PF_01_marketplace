@@ -1,12 +1,13 @@
-var express = require('express'); 
+var express = require('express');
+const cookieParser = require('cookie-parser');                                                          // cookies
 const path = require('path');
 const bcrypt = require("bcrypt")
-const {collection,itemSchema,CreditCard} = require("./server")
+const {collection,itemSchema} = require("./server")
 const session = require('express-session');
 
+var app = express ();
 
-var app = express (); 
- 
+app.use(cookieParser());                                                                                // cookies
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.set('view engine', 'ejs')
@@ -24,33 +25,19 @@ app.get("/login", (req, res) =>{
 app.get("/signup", (req, res) =>{
     res.render("signup");
 })
+
 app.get("/", async (req, res) => {
     try {
-        const user = await collection.findOne({ gmail: req.session.user });
-        if (!user) {
-            return res.redirect('/login');
-        }
         const items = await itemSchema.find();
-        res.render("home", {
-            items,
-            balance: user.balance
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error fetching items or user data");
-    }
-});
-app.get("/item/:id", async (req, res) => {
-    try {
-        const itemId = req.params.id;
-        const item = await itemSchema.findById(itemId);
-        if (!item) {
-            return res.status(404).send("Item not found.");
+        let balance = 0; // kateryna: If logged in, retrieve the user's balance from the database; otherwise, set balance to 0
+        if (req.session.loggedIn) {
+            const user = await collection.findOne({ gmail: req.session.user });
+            balance = user?.balance || 0; // kateryna: If user balance exists, use it; otherwise, default to 0
         }
-        res.render("item", { item });
+        res.render("home", { items , balance });
     } catch (error) {
         console.error(error);
-        res.status(500).send("An error occurred while fetching the item.");
+        res.status(500).send("Error fetching items");
     }
 });
 
@@ -58,26 +45,12 @@ app.get('/new', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/login');
     }
+
     const userEmail = req.session.user;
     res.render('new', { userEmail });
 });
-
-app.get('/profil', isAuthenticated, async (req, res) => {
-    try {
-        const userEmail = req.session.user;
-        const user = await collection.findOne({ gmail: userEmail }).populate({
-            path: 'purchases.itemId',
-            model: 'item',
-            select: 'Name Price'
-        });
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
-        res.render('profil', { user, purchases: user.purchases });
-    } catch (err) {
-        console.error("Error fetching user profile:", err);
-        res.status(500).send("Error fetching user profile");
-    }
+app.get('/profil', isAuthenticated, (req, res) => {
+    res.render('profil');
 });
 
 app.post("/signup", async(req,res) => {
@@ -90,36 +63,38 @@ app.post("/signup", async(req,res) => {
     if (exitinguser){
         res.send("Gmail already exists, please try with an other Gmail")
     }else{
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds)
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(data.password, saltRounds)
 
-    data.password = hashedPassword; 
+        data.password = hashedPassword;
 
-    const userdata = await collection.insertMany(data);
-    console.log(userdata);
-        return res.redirect('/');
+        const userdata = await collection.insertMany(data);
+        console.log(userdata);
+
+        res.render("home", { items });;
     }
 });
+
 app.post("/login", async(req, res)=>{
-        try{
-            const checked = await collection.findOne({gmail: req.body.gmail});
-            if(!checked){
-                res.send("Gmail not found");
-            }
-            const isPasswordMatch = await bcrypt.compare(req.body.password, checked.password)
-            if(isPasswordMatch){
-                req.session.loggedIn = true;
-                req.session.user = checked.gmail;
-                return res.redirect("/");
-            }else{
-                res.send("wrong password, please try again!")
-            }
-        }catch{
-            res.status(500).send("An error occurred, please try again later.");
-
+    try{
+        const checked = await collection.findOne({gmail: req.body.gmail});
+        if(!checked){
+            res.send("Gmail not found");
         }
-})
+        const isPasswordMatch = await bcrypt.compare(req.body.password, checked.password)
+        if(isPasswordMatch){
+            res.cookie('user', checked.gmail, { maxAge: 900000, httpOnly: true });                      // cookies
+            req.session.loggedIn = true;
+            req.session.user = checked.gmail;
+            return res.redirect("/");
+        }else{
+            res.send("wrong password, please try again!")
+        }
+    }catch{
+        res.status(500).send("An error occurred, please try again later.");
 
+    }
+})
 app.get('/sessionlogged', (req, res) => {
     if (req.session.loggedIn) {
         res.json({ loggedIn: true });
@@ -134,9 +109,9 @@ function isAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 app.post("/submit-item", (req, res) => {
-    const { description, price, stock, image, sellerEmail, name } = req.body;
+    const { description, price, stock, image, sellerEmail } = req.body;
 
-    if (!description || !price || !stock || !image || !sellerEmail || !name) {
+    if (!description || !price || !stock || !image || !sellerEmail) {
         return res.status(400).send("All fields are required.");
     }
 
@@ -146,85 +121,22 @@ app.post("/submit-item", (req, res) => {
             Price: price,
             Stock: stock,
             Image: image,
-            Name: name,
             SellerEmail: sellerEmail,
         });
 
         newItem.save()
             .then(() => {
-                return res.redirect("/");
-            })
+            return res.redirect("/");
+        })
             .catch((error) => {
-                console.error(error);
-                res.status(500).send("An error occurred while saving the item.");
-            });
+            console.error(error);
+            res.status(500).send("An error occurred while saving the item.");
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send("An error occurred.");
     }
 });
-app.post('/top-up', async (req, res) => {
-    const { cardNumber, cvv, amount } = req.body;
-
-    try {
-        const creditCard = await CreditCard.findOne({ cardNumber, cvv });
-
-        if (!creditCard) {
-            return res.status(400).send("Invalid card number or CVV.");
-        }
-        if (creditCard.cardBalance < amount) {
-            return res.status(400).send("Insufficient balance in the credit card.");
-        }
-        const userEmail = req.session.user;
-        const user = await collection.findOne({ gmail: userEmail });
-        if (!user) {
-            return res.status(404).send("User not found.");
-        }
-
-        user.balance += parseFloat(amount);
-        await user.save();
-        creditCard.cardBalance -= parseFloat(amount);
-        await creditCard.save();
-        return res.redirect('/');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while processing the top-up.");
-    }
-});
-app.post('/purchase/:itemId', async (req, res) => {
-    const userEmail = req.session.user;
-    const { quantity } = req.body;
-    const itemId = req.params.itemId;
-
-    try {
-        const item = await itemSchema.findById(itemId);
-        if (!item) {
-            return res.status(404).send('Item not found.');
-        }
-        const user = await collection.findOne({ gmail: userEmail });
-        if (!user) {
-            return res.status(404).send('User not found.');
-        }
-        if (item.Stock < quantity) {
-            return res.status(400).send('Not enough stock available.');
-        }
-        const totalPrice = item.Price * quantity;
-        if (user.balance < totalPrice) {
-            return res.status(400).send('Insufficient balance.');
-        }
-        user.balance -= totalPrice;
-        item.Stock -= quantity;
-        await user.save();
-        await item.save();
-        user.purchases.push({ itemId: item._id, quantity });
-        await user.save();
-        res.redirect('/');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('An error occurred during the purchase.');
-    }
-});
-
 
 const port = 5000
 app.listen(port, async() =>{
