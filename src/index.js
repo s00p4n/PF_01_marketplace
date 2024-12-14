@@ -4,8 +4,14 @@ const bcrypt = require("bcrypt")
 const {collection,itemSchema,CreditCard} = require("./server")
 const session = require('express-session');
 
-
 var app = express ();
+//https
+var consolidate = require('consolidate');
+var bodyParser = require("body-parser");
+var https = require('https');
+var fs = require('fs');
+var http = require('http');
+//https
 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
@@ -16,6 +22,21 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+https.createServer({
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+    passphrase: 'ingi'
+}, app).listen(5001, () => {
+    console.log('HTTPS 5000');
+});
+
+http.createServer((req, res) => {
+    res.writeHead(301, { "Location": `https://localhost:5001${req.url}` });
+    res.end();
+}).listen(5002, () => {
+    console.log('HTTP server running on port 5002 (redirecting to HTTPS)');
+});
 
 app.get("/login", (req, res) =>{
     res.render("login");
@@ -225,8 +246,7 @@ app.post('/purchase/:itemId', async (req, res) => {
     }
 });
 
-
-const port = 5000
-app.listen(port, async() =>{
-    console.log(`Server runnung on Port, ${port}`)
-})
+//const port = 5000
+//app.listen(port, async() =>{
+    //console.log(`Server runnung on Port, ${port}`)
+//})
