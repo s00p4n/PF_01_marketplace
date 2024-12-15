@@ -1,7 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+
 <html>
 <body>
-<a class="btn" href="new">vendre</a>
+    <h1 class="main-title" >Welcome to your Profile</h1>
 <form action="/top-up" method="POST" onsubmit="return validateForm()">
+    <div class="mb-3">
+        <a class="mb-3" href="new">vendre</a>
+    </div>
+
     <div class="mb-3">
         <label for="cardNumber" class="form-label">Card Number</label>
         <input type="text" class="form-control" id="cardNumber" name="cardNumber" maxlength="16" required>
@@ -21,9 +32,8 @@
 </form>
 <html>
 <body>
-<h1>Welcome to your Profile</h1>
-
-<h2>Your Purchase History</h2>
+<h2 class="section-title">Your Purchase History</h2>
+<br>
 <table class="table">
     <thead>
     <tr>

@@ -1,12 +1,18 @@
-var express = require('express'); 
+var express = require('express');
 const path = require('path');
 const bcrypt = require("bcrypt")
 const {collection,itemSchema,CreditCard} = require("./server")
 const session = require('express-session');
 
+var app = express ();
+//https
+var consolidate = require('consolidate');
+var bodyParser = require("body-parser");
+var https = require('https');
+var fs = require('fs');
+var http = require('http');
+//https
 
-var app = express (); 
- 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.set('view engine', 'ejs')
@@ -16,6 +22,21 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+https.createServer({
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+    passphrase: 'ingi'
+}, app).listen(5001, () => {
+    console.log('HTTPS 5000');
+});
+
+http.createServer((req, res) => {
+    res.writeHead(301, { "Location": `https://localhost:5001${req.url}` });
+    res.end();
+}).listen(5002, () => {
+    console.log('HTTP server running on port 5002 (redirecting to HTTPS)');
+});
 
 app.get("/login", (req, res) =>{
     res.render("login");
@@ -90,34 +111,34 @@ app.post("/signup", async(req,res) => {
     if (exitinguser){
         res.send("Gmail already exists, please try with an other Gmail")
     }else{
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds)
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(data.password, saltRounds)
 
-    data.password = hashedPassword; 
+        data.password = hashedPassword;
 
-    const userdata = await collection.insertMany(data);
-    console.log(userdata);
+        const userdata = await collection.insertMany(data);
+        console.log(userdata);
         return res.redirect('/');
     }
 });
 app.post("/login", async(req, res)=>{
-        try{
-            const checked = await collection.findOne({gmail: req.body.gmail});
-            if(!checked){
-                res.send("Gmail not found");
-            }
-            const isPasswordMatch = await bcrypt.compare(req.body.password, checked.password)
-            if(isPasswordMatch){
-                req.session.loggedIn = true;
-                req.session.user = checked.gmail;
-                return res.redirect("/");
-            }else{
-                res.send("wrong password, please try again!")
-            }
-        }catch{
-            res.status(500).send("An error occurred, please try again later.");
-
+    try{
+        const checked = await collection.findOne({gmail: req.body.gmail});
+        if(!checked){
+            res.send("Gmail not found");
         }
+        const isPasswordMatch = await bcrypt.compare(req.body.password, checked.password)
+        if(isPasswordMatch){
+            req.session.loggedIn = true;
+            req.session.user = checked.gmail;
+            return res.redirect("/");
+        }else{
+            res.send("wrong password, please try again!")
+        }
+    }catch{
+        res.status(500).send("An error occurred, please try again later.");
+
+    }
 })
 
 app.get('/sessionlogged', (req, res) => {
@@ -152,12 +173,12 @@ app.post("/submit-item", (req, res) => {
 
         newItem.save()
             .then(() => {
-                return res.redirect("/");
-            })
+            return res.redirect("/");
+        })
             .catch((error) => {
-                console.error(error);
-                res.status(500).send("An error occurred while saving the item.");
-            });
+            console.error(error);
+            res.status(500).send("An error occurred while saving the item.");
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send("An error occurred.");
@@ -225,8 +246,7 @@ app.post('/purchase/:itemId', async (req, res) => {
     }
 });
 
-
-const port = 5000
-app.listen(port, async() =>{
-    console.log(`Server runnung on Port, ${port}`)
-})
+//const port = 5000
+//app.listen(port, async() =>{
+    //console.log(`Server runnung on Port, ${port}`)
+//})
