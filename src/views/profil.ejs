@@ -5,79 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
 
-<html>
-<body>
-    <h1 class="main-title" >Welcome to your Profile</h1>
-<form action="/top-up" method="POST" onsubmit="return validateForm()">
-    <div class="mb-3">
-        <a class="mb-3" href="new">vendre</a>
-    </div>
+    <html>
+    <body>
+    <form action="/top-up" method="POST" onsubmit="return validateForm()">
+        <div class="mb-3">
+            <a class="mb-3" href="new">vendre</a>
+        </div>
 
-    <div class="mb-3">
-        <label for="cardNumber" class="form-label">Card Number</label>
-        <input type="text" class="form-control" id="cardNumber" name="cardNumber" maxlength="16" required>
-    </div>
+        <div class="mb-3">
+            <label for="cardNumber" class="form-label">N° carte </label>
+            <input type="text" class="form-control" id="cardNumber" name="cardNumber" maxlength="16" required>
+        </div>
 
-    <div class="mb-3">
-        <label for="cvv" class="form-label">CVV</label>
-        <input type="text" class="form-control" id="cvv" name="cvv" maxlength="3" required>
-    </div>
+        <div class="mb-3">
+            <label for="cvv" class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cvv" name="cvv" maxlength="3" required>
+        </div>
 
-    <div class="mb-3">
-        <label for="amount" class="form-label">Amount to Top Up</label>
-        <input type="number" class="form-control" id="amount" name="amount" min="1" required>
-    </div>
+        <div class="mb-3">
+            <label for="amount" class="form-label">Montant</label>
+            <input type="number" class="form-control" id="amount" name="amount" min="1" required>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Top Up</button>
-</form>
-<html>
-<body>
-<h2 class="section-title">Your Purchase History</h2>
-<br>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Item Name</th>
-        <th>Price</th>
-        <th>Quantity</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% purchases.forEach(purchase => { %>
+        <button type="submit" class="btn btn-primary">Dépot argent</button>
+    </form>
+    <html>
+    <body>
+    <h2 class="section-title">Historique des achats</h2>
+    <br>
+    <table class="table">
+        <thead>
         <tr>
-            <td><%= purchase.itemId.Name %></td>
-            <td><%= purchase.itemId.Price %></td>
-            <td><%= purchase.quantity %></td>
+            <th>nom</th>
+            <th>prix</th>
+            <th>quantité</th>
         </tr>
-    <% }) %>
-    </tbody>
-</table>
-</body>
-</html>
+        </thead>
+        <tbody>
+        <% purchases.forEach(purchase => { %>
+            <tr>
+                <td><%= purchase.itemId.Name %></td>
+                <td><%= purchase.itemId.Price %></td>
+                <td><%= purchase.quantity %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    </body>
+    </html>
 
-<script>
-    function validateForm() {
-        var cardNumber = document.getElementById("cardNumber").value.trim();
-        var cvv = document.getElementById("cvv").value.trim();
-        var amount = document.getElementById("amount").value.trim();
+    <script>
+        function validateForm() {
+            var cardNumber = document.getElementById("cardNumber").value.trim();
+            var cvv = document.getElementById("cvv").value.trim();
+            var amount = document.getElementById("amount").value.trim();
 
-        if (cardNumber.length !== 16 || isNaN(cardNumber)) {
-            alert("Please enter a valid 16-digit card number.");
-            return false;
+            if (cardNumber.length !== 16 || isNaN(cardNumber)) {
+                alert("Please enter a valid 16-digit card number.");
+                return false;
+            }
+
+            if (cvv.length !== 3 || isNaN(cvv)) {
+                alert("Please enter a valid 3-digit CVV.");
+                return false;
+            }
+
+            if (amount <= 0) {
+                alert("Please enter a valid top-up amount.");
+                return false;
+            }
+
+            return true;
         }
-
-        if (cvv.length !== 3 || isNaN(cvv)) {
-            alert("Please enter a valid 3-digit CVV.");
-            return false;
-        }
-
-        if (amount <= 0) {
-            alert("Please enter a valid top-up amount.");
-            return false;
-        }
-
-        return true;
-    }
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
