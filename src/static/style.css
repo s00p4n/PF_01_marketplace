@@ -226,7 +226,8 @@ table img {
 }
 
 .form-control::placeholder {
-    color: #EEEEEE;
+    color: #B9BBDF;
+    opacity: 1;
 }
 
 .btn-primary {
