@@ -78,11 +78,14 @@ spinButton.addEventListener('click', () => {
 
     setTimeout(() => {
         let pointerAngle = (90 - (finalDegrees % 360)) % 360;
-
+        let prize;
         for(var i = 0; i< outcomes.length; i++){
-        if(pointerAngle >= outcome.startAngle && pointerAngle < outcome.endAngle){
-                       let prize = outcomes[i];
-                       break;
+                 if (
+                        (pointerAngle >= outcomes[i].startAngle && pointerAngle < outcomes[i].endAngle) ||
+                        (i === outcomes.length - 1 && pointerAngle === 0)
+                    ) {
+                        prize = outcomes[i];
+                        break;
                     }
         }
 
