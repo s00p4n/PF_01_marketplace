@@ -149,7 +149,6 @@ app.get('/sessionlogged', (req, res) => {
     }
 });
 
-
 app.post('/update-balance', async (req, res) => {
     try {
         const { prize } = req.body;
