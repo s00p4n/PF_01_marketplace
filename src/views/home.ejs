@@ -11,10 +11,8 @@
                 const data = await response.json();
 
                 if (data.loggedIn) {
-                    // Redirect to the desired page
                     window.location.href = '/profil';
                 } else {
-                    // Show a popup message
                     alert('You must be logged in to access this page!');
                 }
             } catch (error) {
@@ -42,60 +40,71 @@
 <button class="spin-button" id="spinButton">Spin</button>
 <div class="result" id="result">Spin the wheel to win!</div>
 <div class="color-list">
-    <div class="color-item" style="background-color: #61C0BF;">10% Discount</div>
-    <div class="color-item" style="background-color: #937DC2;">Free Shipping</div>
-    <div class="color-item" style="background-color: #FAE3D9;">5% Discount</div>
-    <div class="color-item" style="background-color: #FFB6B9;">Try Again</div>
-    <div class="color-item" style="background-color: #BBDED6;">Nothing</div>
-    <div class="color-item" style="background-color: #FFABE1;">Bonus Points</div>
+    <div class="color-item" style="background-color: #61C0BF;">1 €</div>
+    <div class="color-item" style="background-color: #937DC2;">2 €</div>
+    <div class="color-item" style="background-color: #FAE3D9;">5 €</div>
+    <div class="color-item" style="background-color: #FFB6B9;">nothing</div>
+    <div class="color-item" style="background-color: #BBDED6;">-1 €</div>
+    <div class="color-item" style="background-color: #FFABE1;">-2 €</div>
 </div>
 <script>
     const wheel = document.getElementById('wheel');
     const spinButton = document.getElementById('spinButton');
     const result = document.getElementById('result');
 
-    // Possible outcomes with angles
     const outcomes = [
-        { label: '10% Discount', color: '#61C0BF', startAngle: 0, endAngle: 60 },
-        { label: 'Free Shipping', color: '#937DC2', startAngle: 60, endAngle: 120 },
-        { label: '5% Discount', color: '#FAE3D9', startAngle: 120, endAngle: 180 },
-        { label: 'Try Again', color: '#FFB6B9', startAngle: 180, endAngle: 240 },
-        { label: 'Nothing', color: '#BBDED6', startAngle: 240, endAngle: 300 },
-        { label: 'Bonus Points', color: '#FFABE1', startAngle: 300, endAngle: 360 }
+        { label: '1', color: '#61C0BF', startAngle: 0, endAngle: 60 },
+        { label: '2', color: '#937DC2', startAngle: 60, endAngle: 120 },
+        { label: '5', color: '#FAE3D9', startAngle: 120, endAngle: 180 },
+        { label: 'nothing', color: '#FFB6B9', startAngle: 180, endAngle: 240 },
+        { label: '-1', color: '#BBDED6', startAngle: 240, endAngle: 300 },
+        { label: '-2', color: '#FFABE1', startAngle: 300, endAngle: 360 }
     ];
 
-    let spinning = false;
+    var spinning = false;
 
-    spinButton.addEventListener('click', () => {
-        if (spinning) return;
+spinButton.addEventListener('click', () => {
+    if (spinning) return;
 
-        spinning = true;
-        spinButton.disabled = true;
+    spinning = true;
+    spinButton.disabled = true;
 
-        const currentTime = new Date();
-        let random = currentTime.getMilliseconds() / 1000;
+    var currentTime = new Date();
+    var random = currentTime.getMilliseconds() / 1000;
 
-        // Randomize the spin
-        const randomDegrees = Math.floor(random * 360) + 3000; // At least 10 full spins
-        const finalDegrees = randomDegrees % 360; // The final position on the wheel (0–360)
+    var randomDegrees = Math.floor(random * 360) + 360;
+    var finalDegrees = randomDegrees % 360;
+    wheel.style.transform = `rotate(${randomDegrees}deg)`;
 
-        wheel.style.transform = `rotate(${randomDegrees}deg)`;
+    setTimeout(() => {
+        let pointerAngle = (90 - (finalDegrees % 360)) % 360;
 
-        // Determine the prize
-        setTimeout(() => {
-            // Pointer is at 0° (top of the wheel), adjust the angle accordingly
-            const pointerAngle = (90 - finalDegrees + 10) % 360; // Offset pointer by 30° (center of first segment)
+        for(var i = 0; i< outcomes.length; i++){
+        if(pointerAngle >= outcome.startAngle && pointerAngle < outcome.endAngle){
+                       let prize = outcomes[i];
+                       break;
+                    }
+        }
 
-            // Find the corresponding outcome
-            const prize = outcomes.find(outcome =>
-                (pointerAngle >= outcome.startAngle) && (pointerAngle < outcome.endAngle)
-            );
+        result.textContent = `You won: ${prize.label} €`;
 
-            result.textContent = `You won: ${prize.label}`;
-            spinning = false;
-            spinButton.disabled = false;
-        }, 5000); // Match the transition duration
-    });
+        fetch('/update-balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prize: parseFloat(prize.label) }),
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update balance');
+                return response.json();
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                spinning = false;
+                spinButton.disabled = false;
+            });
+    }, 5000);
+});
+
 </script>
 
 <h1 class="main-title">Bienvenue</h1>
