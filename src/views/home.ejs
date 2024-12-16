@@ -32,7 +32,7 @@
         <a href="/login">Connection</a>
     </button>
 </div>
-
+<h1>Wheel of Fortune</h1>
 <div class="wheel-container">
     <div class="pointer"></div>
      <div class="wheel" id="wheel">         </div>
@@ -72,7 +72,7 @@ spinButton.addEventListener('click', () => {
     var currentTime = new Date();
     var random = currentTime.getMilliseconds() / 1000;
 
-    var randomDegrees = Math.floor(random * 360) + 360;
+    var randomDegrees = Math.floor(Math.random() * 360) + 360;
     var finalDegrees = randomDegrees % 360;
     wheel.style.transform = `rotate(${randomDegrees}deg)`;
 
