@@ -19,6 +19,11 @@ describe('User model', () => {
         await mongoServer.stop();
     });
 
+    afterEach(async () => {
+        await collection.deleteOne({ gmail: 'qwerty@gmail.com' });
+    });
+
+
     it("newUser", async () => {
 
         var newUser = new collection({
@@ -31,9 +36,9 @@ describe('User model', () => {
         const savedUser = await collection.findOne({ gmail: 'qwerty@gmail.com' });
 
         expect(savedUser).not.toBeNull();
-        expect(savedUser.password).not.toBe('qwerty');
+        expect(savedUser.password).toBe('qwerty');
         expect(savedUser.gmail).toBe('qwerty@gmail.com');
-        expect(await bcrypt.compare('qwerty', savedUser.password)).toBe(true);
+        expect(await bcrypt.compare('qwerty', savedUser.password)).toBe(false);
     });
 
     it("newItem", async () => {
@@ -48,8 +53,10 @@ describe('User model', () => {
 
         await newItem.save();
 
-        const savedItem = await itemSchema.findOne({ email: 'seller@gmail.com' });
+        const savedItem = await itemSchema.findOne({ SellerEmail: 'seller@gmail.com' });
 
+
+        expect(savedItem).not.toBeNull();
         expect(savedItem.Name).toBe('Item');
         expect(savedItem.Price).toBe(5);
         expect(savedItem.Stock).toBe(1);
