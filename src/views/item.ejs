@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
-    <title>Item Details</title>
 </head>
 <body>
 <h1><%= item.Name %></h1>
 <img src="<%= item.Image %>" alt="Item Image" width="200">
 <p><strong>Description:</strong> <%= item.Description %></p>
-<p><strong>Price:</strong> $<%= item.Price %></p>
+<p><strong>Prix:</strong> $<%= item.Price %></p>
 <p><strong>Stock:</strong> <%= item.Stock %> units</p>
-<p><strong>Seller Email:</strong> <%= item.SellerEmail %></p>
-
-<!-- Quantity input and purchase button -->
+<p><strong>Vendeur:</strong> <%= item.SellerEmail %></p>
 <form action="/purchase/<%= item._id %>" method="POST">
-    <label for="quantity">Quantity:</label>
+    <label for="quantity">Quantité:</label>
     <input type="number" id="quantity" name="quantity" min="1" max="<%= item.Stock %>" required>
-    <button type="submit">Purchase</button>
+    <button type="submit">Acheter</button>
 </form>
-
-<a href="/">Back to Home</a>
+<a href="/">retour à l'acceuil</a>
 </body>
 </html>

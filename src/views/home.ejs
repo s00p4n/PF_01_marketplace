@@ -26,99 +26,14 @@
     <body>
 
 <div class="menu-container">
-    <p class="menu"><strong>Balance:</strong> $<%= balance %></p>
-    <button class="menu" onclick="iflogged()">My account</button>
+    <p class="menu"><strong>Solde:</strong> $<%= balance %></p>
+    <button class="menu" onclick="iflogged()">Mon profil</button>
     <button class="menu">
         <a href="/login">Connection</a>
     </button>
 </div>
-<h1>Wheel of Fortune</h1>
-<div class="wheel-container">
-    <div class="pointer"></div>
-     <div class="wheel" id="wheel">         </div>
-</div>
-<button class="spin-button" id="spinButton">Spin</button>
-<div class="result" id="result">Spin the wheel to win!</div>
-<div class="color-list">
-    <div class="color-item" style="background-color: #61C0BF;">1 €</div>
-    <div class="color-item" style="background-color: #937DC2;">2 €</div>
-    <div class="color-item" style="background-color: #FAE3D9;">5 €</div>
-    <div class="color-item" style="background-color: #FFB6B9;">nothing</div>
-    <div class="color-item" style="background-color: #BBDED6;">-1 €</div>
-    <div class="color-item" style="background-color: #FFABE1;">-2 €</div>
-</div>
-<script>
-    const wheel = document.getElementById('wheel');
-    const spinButton = document.getElementById('spinButton');
-    const result = document.getElementById('result');
-<div class="menu">
-    <p><strong>Balance:</strong> $<%= balance %></p> <!-- Display the user's balance -->
-</div>
-<button class="menu" onclick="iflogged()">Mon compte</button>
-<button class="menu">
-    <a class="btn" href="/login">connexion</a>
-</button>
 
-
-    const outcomes = [
-        { label: '1', color: '#61C0BF', startAngle: 0, endAngle: 60 },
-        { label: '2', color: '#937DC2', startAngle: 60, endAngle: 120 },
-        { label: '5', color: '#FAE3D9', startAngle: 120, endAngle: 180 },
-        { label: 'nothing', color: '#FFB6B9', startAngle: 180, endAngle: 240 },
-        { label: '-1', color: '#BBDED6', startAngle: 240, endAngle: 300 },
-        { label: '-2', color: '#FFABE1', startAngle: 300, endAngle: 360 }
-    ];
-
-    var spinning = false;
-
-spinButton.addEventListener('click', () => {
-    if (spinning) return;
-
-    spinning = true;
-    spinButton.disabled = true;
-
-    var currentTime = new Date();
-    var random = currentTime.getMilliseconds() / 1000;
-
-    var randomDegrees = Math.floor(Math.random() * 360) + 360;
-    var finalDegrees = randomDegrees % 360;
-    wheel.style.transform = `rotate(${randomDegrees}deg)`;
-
-    setTimeout(() => {
-        let pointerAngle = (90 - (finalDegrees % 360)) % 360;
-        let prize;
-        for(var i = 0; i< outcomes.length; i++){
-                 if (
-                        (pointerAngle >= outcomes[i].startAngle && pointerAngle < outcomes[i].endAngle) ||
-                        (i === outcomes.length - 1 && pointerAngle === 0)
-                    ) {
-                        prize = outcomes[i];
-                        break;
-                    }
-        }
-
-        result.textContent = `You won: ${prize.label} €`;
-
-        fetch('/update-balance', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prize: parseFloat(prize.label) }),
-        })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to update balance');
-                return response.json();
-            })
-            .catch(error => console.error('Error:', error))
-            .finally(() => {
-                spinning = false;
-                spinButton.disabled = false;
-            });
-    }, 5000);
-});
-
-</script>
-
-<h1 class="main-title">Welcome</h1>
+<h1 class="main-title">Bienvenue</h1>
 <div class="text-center mb-3">
     <h3>Tri:</h3>
     <a href="/?sort=asc" class="btn btn-primary">Ordre croissant</a>
@@ -127,11 +42,11 @@ spinButton.addEventListener('click', () => {
 <table class="table table-striped table-bordered text-center">
     <thead class="table-dark">
     <tr>
-        <th>Price</th>
+        <th>Prix</th>
         <th>Description</th>
-        <th>Seller Email</th>
+        <th>vendeur</th>
         <th>Stock</th>
-        <th>Name</th>
+        <th>Nom</th>
         <th>Image</th>
     </tr>
     </thead>
@@ -151,11 +66,96 @@ spinButton.addEventListener('click', () => {
         <% }) %>
     <% } else { %>
         <tr>
-            <td colspan="6">No items available.</td>
+            <td colspan="6">Pas d'articles disponibles</td>
         </tr>
     <% } %>
     </tbody>
 </table>
+<h1>Wheel of Fortune</h1>
+<div class="wheel-container">
+    <div class="pointer"></div>
+    <div class="wheel" id="wheel">         </div>
+</div>
+<button class="spin-button" id="spinButton">Spin</button>
+<div class="result" id="result">Spin the wheel to win!</div>
+<div class="color-list">
+    <div class="color-item" style="background-color: #61C0BF;">1 €</div>
+    <div class="color-item" style="background-color: #937DC2;">2 €</div>
+    <div class="color-item" style="background-color: #FAE3D9;">5 €</div>
+    <div class="color-item" style="background-color: #FFB6B9;">nothing</div>
+    <div class="color-item" style="background-color: #BBDED6;">-1 €</div>
+    <div class="color-item" style="background-color: #FFABE1;">-2 €</div>
+</div>
+<script>
+    const wheel = document.getElementById('wheel');
+    const spinButton = document.getElementById('spinButton');
+    const result = document.getElementById('result');
+    <div class="menu">
+        <p><strong>Balance:</strong> $<%= balance %></p> <!-- Display the user's balance -->
+    </div>
+    <button class="menu" onclick="iflogged()">Mon compte</button>
+    <button class="menu">
+        <a class="btn" href="/login">connexion</a>
+    </button>
+
+
+    const outcomes = [
+        { label: '1', color: '#61C0BF', startAngle: 0, endAngle: 60 },
+        { label: '2', color: '#937DC2', startAngle: 60, endAngle: 120 },
+        { label: '5', color: '#FAE3D9', startAngle: 120, endAngle: 180 },
+        { label: 'nothing', color: '#FFB6B9', startAngle: 180, endAngle: 240 },
+        { label: '-1', color: '#BBDED6', startAngle: 240, endAngle: 300 },
+        { label: '-2', color: '#FFABE1', startAngle: 300, endAngle: 360 }
+    ];
+
+    var spinning = false;
+
+    spinButton.addEventListener('click', () => {
+        if (spinning) return;
+
+        spinning = true;
+        spinButton.disabled = true;
+
+        var currentTime = new Date();
+        var random = currentTime.getMilliseconds() / 1000;
+
+        var randomDegrees = Math.floor(Math.random() * 360) + 360;
+        var finalDegrees = randomDegrees % 360;
+        wheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+        setTimeout(() => {
+            let pointerAngle = (90 - (finalDegrees % 360)) % 360;
+            let prize;
+            for(var i = 0; i< outcomes.length; i++){
+                if (
+                    (pointerAngle >= outcomes[i].startAngle && pointerAngle < outcomes[i].endAngle) ||
+                    (i === outcomes.length - 1 && pointerAngle === 0)
+                ) {
+                    prize = outcomes[i];
+                    break;
+                }
+            }
+
+            result.textContent = `You won: ${prize.label} €`;
+
+            fetch('/update-balance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prize: parseFloat(prize.label) }),
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to update balance');
+                    return response.json();
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    spinning = false;
+                    spinButton.disabled = false;
+                });
+        }, 5000);
+    });
+
+</script>
 
 </body>
 </html>

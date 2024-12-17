@@ -35,7 +35,7 @@ http.createServer((req, res) => {
     res.writeHead(301, { "Location": `https://localhost:5001${req.url}` });
     res.end();
 }).listen(5002, () => {
-    console.log('HTTP server running on port 5002 (redirecting to HTTPS)');
+
 });
 
 app.get("/login", (req, res) =>{
@@ -77,8 +77,7 @@ app.get("/item/:id", async (req, res) => {
         }
         res.render("item", { item });
     } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while fetching the item.");
+        res.status(500).send("no item");
     }
 });
 
@@ -103,8 +102,7 @@ app.get('/profil', isAuthenticated, async (req, res) => {
         }
         res.render('profil', { user, purchases: user.purchases });
     } catch (err) {
-        console.error("Error fetching user profile:", err);
-        res.status(500).send("Error fetching user profile");
+        res.status(500).send("no profile");
     }
 });
 
@@ -143,7 +141,7 @@ app.post("/login", async(req, res)=>{
             res.send("wrong password, please try again!")
         }
     }catch{
-        res.status(500).send("An error occurred, please try again later.");
+        res.status(500).send("An error occurred, please try again.");
 
     }
 })
@@ -208,7 +206,6 @@ app.post("/submit-item", (req, res) => {
             res.status(500).send("An error occurred while saving the item.");
         });
     } catch (error) {
-        console.error(error);
         res.status(500).send("An error occurred.");
     }
 });
@@ -237,8 +234,7 @@ app.post('/top-up', async (req, res) => {
         await creditCard.save();
         return res.redirect('/');
     } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while processing the top-up.");
+        res.status(500).send("An error occurred.");
     }
 });
 app.post('/purchase/:itemId', async (req, res) => {
@@ -251,26 +247,39 @@ app.post('/purchase/:itemId', async (req, res) => {
         if (!item) {
             return res.status(404).send('Item not found.');
         }
+
         const user = await collection.findOne({ gmail: userEmail });
         if (!user) {
             return res.status(404).send('User not found.');
         }
+
         if (item.Stock < quantity) {
             return res.status(400).send('Not enough stock available.');
         }
+
         const totalPrice = item.Price * quantity;
         if (user.balance < totalPrice) {
             return res.status(400).send('Insufficient balance.');
         }
+
         user.balance -= totalPrice;
         item.Stock -= quantity;
+
+        const seller = await collection.findOne({ gmail: item.SellerEmail });
+        if (!seller) {
+            return res.status(404).send('Seller not found.');
+        }
+        seller.balance += totalPrice;
+
         await user.save();
         await item.save();
+        await seller.save();
+
         user.purchases.push({ itemId: item._id, quantity });
         await user.save();
+
         res.redirect('/');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('An error occurred during the purchase.');
+        res.status(500).send('An error occurred.');
     }
 });
