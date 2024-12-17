@@ -51,6 +51,14 @@
     const wheel = document.getElementById('wheel');
     const spinButton = document.getElementById('spinButton');
     const result = document.getElementById('result');
+<div class="menu">
+    <p><strong>Balance:</strong> $<%= balance %></p> <!-- Display the user's balance -->
+</div>
+<button class="menu" onclick="iflogged()">Mon compte</button>
+<button class="menu">
+    <a class="btn" href="/login">connexion</a>
+</button>
+
 
     const outcomes = [
         { label: '1', color: '#61C0BF', startAngle: 0, endAngle: 60 },
@@ -111,6 +119,11 @@ spinButton.addEventListener('click', () => {
 </script>
 
 <h1 class="main-title">Welcome</h1>
+<div class="text-center mb-3">
+    <h3>Tri:</h3>
+    <a href="/?sort=asc" class="btn btn-primary">Ordre croissant</a>
+    <a href="/?sort=desc" class="btn btn-primary">Ordre décroissant</a>
+</div>
 <table class="table table-striped table-bordered text-center">
     <thead class="table-dark">
     <tr>
@@ -125,20 +138,20 @@ spinButton.addEventListener('click', () => {
     <tbody>
     <% if (Array.isArray(items) && items.length > 0) { %>
         <% items.forEach(item => { %>
-            <% if (item.Stock >= 1) { %> <!-- Only show item if stock >= 1 -->
-            <tr>
-                <td><%= item.Price %>  € </td> <!-- Display Price -->
-                <td><%= item.Description %></td> <!-- Display Description -->
-                <td><%= item.SellerEmail %></td> <!-- Display Seller Email -->
-                <td><%= item.Stock %></td> <!-- Display Stock -->
-                <td><a href="/item/<%= item._id %>"><%= item.Name %></a></td> <!-- Display Item Name -->
-                <td><img src="<%= item.Image %>" alt="Item Image" width="100"></td> <!-- Display Image -->
-            </tr>
+            <% if (item.Stock >= 1) { %>
+                <tr>
+                    <td><%= item.Price %> €</td>
+                    <td><%= item.Description %></td>
+                    <td><%= item.SellerEmail %></td>
+                    <td><%= item.Stock %></td>
+                    <td><a href="/item/<%= item._id %>"><%= item.Name %></a></td>
+                    <td><img src="<%= item.Image %>" alt="Item Image" width="100"></td>
+                </tr>
             <% } %>
         <% }) %>
     <% } else { %>
         <tr>
-            <td colspan="6">No items available.</td> <!-- If no items are found -->
+            <td colspan="6">No items available.</td>
         </tr>
     <% } %>
     </tbody>

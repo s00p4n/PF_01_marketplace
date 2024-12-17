@@ -51,14 +51,21 @@ app.get("/", async (req, res) => {
         if (!user) {
             return res.redirect('/login');
         }
-        const items = await itemSchema.find();
+        const sort = req.query.sort;
+
+        let sortOptions = {};
+        if (sort === 'asc') {
+            sortOptions.Price = 1;
+        } else if (sort === 'desc') {
+            sortOptions.Price = -1;
+        }
+        const items = await itemSchema.find().sort(sortOptions);
         res.render("home", {
             items,
             balance: user.balance
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Error fetching items or user data");
+        res.status(500).send("Error");
     }
 });
 app.get("/item/:id", async (req, res) => {
