@@ -17,7 +17,7 @@ body{
     width: 300px;
     padding: 20px;
     border: 1px solid #EEEEEE;
-    border-radius: 5px
+    border-radius: 5px;
     margin: 20px;
 }
 
@@ -268,7 +268,7 @@ table img {
     #BBDED6 240deg 300deg,
     #FFABE1 300deg 360deg
     );
-    transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    transition: transform 5s ease-out;
 }
 .pointer {
     position: absolute;
@@ -302,6 +302,11 @@ table img {
     font-weight: bold;
     text-align: center;
 }
+
+.wheel.spinning {
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
 
 .label {
     position: absolute;
