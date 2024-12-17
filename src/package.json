@@ -18,7 +18,7 @@
   "devDependencies": {
     "bcrypt": "^5.1.1",
     "jasmine": "^5.5.0",
-    "mongodb-memory-server": "^10.1.2",
+    "mongodb-memory-server": "^6.9.6",
     "mongoose": "^8.9.1",
     "supertest": "^7.0.0"
   }
