@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { UserDB, ItemDB, CreditCard } = require('../server');
+const { collection, itemSchema, CreditCard } = require('../server');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 describe('User model', () => {
@@ -11,7 +11,7 @@ describe('User model', () => {
         const uri = await mongoServer.getUri();
         console.log("ici")
         console.log(uri);
-        await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        //await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     });
 
     afterAll(async () => {
@@ -21,14 +21,14 @@ describe('User model', () => {
 
     it("newUser", async () => {
 
-        var newUser = new UserDB({
+        var newUser = new collection({
             password: 'qwerty',
             gmail: 'qwerty@gmail.com',
         });
 
         await newUser.save();
 
-        const savedUser = await UserDB.findOne({ email: 'qwerty@gmail.com' });
+        const savedUser = await collection.findOne({ gmail: 'qwerty@gmail.com' });
 
         expect(savedUser).not.toBeNull();
         expect(savedUser.password).not.toBe('qwerty');
@@ -48,7 +48,7 @@ describe('User model', () => {
 
         await newItem.save();
 
-        const savedItem = await UserDB.findOne({ email: 'seller@gmail.com' });
+        const savedItem = await itemSchema.findOne({ email: 'seller@gmail.com' });
 
         expect(savedItem.Name).toBe('Item');
         expect(savedItem.Price).toBe(5);
