@@ -1,0 +1,25 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "consolidate": "^1.0.4",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "mongodb": "^6.11.0"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.1.1",
+    "jasmine": "^5.5.0",
+    "mongodb-memory-server": "^6.9.6",
+    "mongoose": "^8.9.1",
+    "supertest": "^7.0.0"
+  }
+}

@@ -28,7 +28,7 @@ https.createServer({
     cert: fs.readFileSync('./cert.pem'),
     passphrase: 'ingi'
 }, app).listen(5001, () => {
-    console.log('HTTPS 5000');
+    console.log('HTTPS');
 });
 
 http.createServer((req, res) => {
@@ -155,6 +155,27 @@ app.get('/sessionlogged', (req, res) => {
         res.json({ loggedIn: false });
     }
 });
+
+app.post('/update-balance', async (req, res) => {
+    try {
+        const { prize } = req.body;
+        const userEmail = req.session.user;
+        const user = await collection.findOne({ gmail: userEmail });
+        if (!userEmail || !user) {
+            return res.status(401).send('Unauthorized: Please log in.');
+        }
+
+        user.balance += prize;
+        await user.save();
+
+        res.json({ newBalance: user.balance });
+    } catch (error) {
+        console.error('Error updating balance:', error);
+        res.status(500).send('Failed to update balance.');
+    }
+});
+
+
 function isAuthenticated(req, res, next) {
     if (req.session.loggedIn) {
         return next();
@@ -210,6 +231,7 @@ app.post('/top-up', async (req, res) => {
         }
 
         user.balance += parseFloat(amount);
+        user.balance += prizevalue;
         await user.save();
         creditCard.cardBalance -= parseFloat(amount);
         await creditCard.save();
@@ -252,8 +274,3 @@ app.post('/purchase/:itemId', async (req, res) => {
         res.status(500).send('An error occurred during the purchase.');
     }
 });
-
-//const port = 5000
-//app.listen(port, async() =>{
-    //console.log(`Server runnung on Port, ${port}`)
-//})

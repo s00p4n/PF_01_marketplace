@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Fortune</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #333;
+            background: conic-gradient(
+                #ff0000 0deg 60deg,
+                #00ff00 60deg 120deg,
+                #0000ff 120deg 180deg,
+                #ffff00 180deg 240deg,
+                #ff00ff 240deg 300deg,
+                #00ffff 300deg 360deg
+            );
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+        .pointer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(90deg);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #333;
+            z-index: 2;
+        }
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .spin-button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel"></div>
+    </div>
+    <button class="spin-button" id="spinButton">Spin</button>
+    <div class="result" id="result">Spin the wheel to win!</div>
+
+    <script>
+        const wheel = document.getElementById('wheel');
+        const spinButton = document.getElementById('spinButton');
+        const result = document.getElementById('result');
+
+        // Possible outcomes
+        const outcomes = [
+            '10% Discount',
+            'Free Shipping',
+            '5% Discount',
+            'Try Again',
+            '20% Discount',
+            'Bonus Points'
+        ];
+
+        let spinning = false;
+
+        spinButton.addEventListener('click', () => {
+            if (spinning) return;
+
+            spinning = true;
+            spinButton.disabled = true;
+            result.textContent = 'Spinning...';
+
+            // Randomize the spin
+            const randomDegrees = Math.floor(Math.random() * 360) + 3600; // At least 10 full spins
+            const selectedIndex = Math.floor(((randomDegrees % 360) / 60));
+
+            wheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+            // Show result after spin
+            setTimeout(() => {
+                const prize = outcomes[selectedIndex];
+                result.textContent = `You won: ${prize}`;
+                spinning = false;
+                spinButton.disabled = false;
+            }, 5000); // Match the transition duration
+        });
+    </script>
+</body>
+</html>

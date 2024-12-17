@@ -39,20 +39,31 @@ body{
     border: 1px solid #EEEEEE;
     border-radius: 3px;
 }
-
-.submit-btn{
-    display: block;
+.btn-primary {
+    display: inline-block;
     width: 100%;
     padding: 10px;
     background-color: #00ADB5;
     color: #EEEEEE;
     border: none;
     border-radius: 5px;
+    text-align: center;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.submit-btn:hover{
-    background-color: #00ADB5;
+.btn-primary:hover {
+    background-color: #33C4CC;
+}
+
+.btn-primary a {
+    color: #EEEEEE;
+    text-decoration: none;
+    display: block;
+}
+
+.btn-primary a:hover {
+    text-decoration: none;
 }
 
 p{
@@ -131,8 +142,9 @@ table img {
 
 .menu {
     display: inline-block;
-    padding: 10px 10px;
-    font-size: 10px;
+    width: 150px;
+    padding: 10px;
+    font-size: 14px;
     color: #EEEEEE;
     background-color: #00ADB5;
     border: none;
@@ -140,6 +152,7 @@ table img {
     cursor: pointer;
     text-align: center;
     text-decoration: none;
+    margin: 5px;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -155,11 +168,23 @@ table img {
 .menu a {
     color: #EEEEEE;
     text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .menu a:hover {
     text-decoration: underline;
 }
+
+.menu-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin: 10px 0;
+}
+
 
 .form-container {
     max-width: 400px;
@@ -188,6 +213,7 @@ table img {
     font-size: 14px;
     font-weight: bold;
     color: #222831;
+    text-align: center;
 }
 
 .form-control {
@@ -200,7 +226,8 @@ table img {
 }
 
 .form-control::placeholder {
-    color: #EEEEEE;
+    color: #B9BBDF;
+    opacity: 1;
 }
 
 .btn-primary {
@@ -219,4 +246,70 @@ table img {
 
 .btn-primary:hover {
     background-color: #00ADB5;
+}
+
+/* Wheel of Fortune game CSS */
+.wheel-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin-top: 30px;
+}
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid #333;
+    background: conic-gradient(
+    #61C0BF 0deg 60deg,
+    #937DC2 60deg 120deg,
+    #FAE3D9 120deg 180deg,
+    #FFB6B9 180deg 240deg,
+    #BBDED6 240deg 300deg,
+    #FFABE1 300deg 360deg
+    );
+    transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+.pointer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #333;
+    z-index: 2;
+}
+.spin-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #00ADB5;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.spin-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+.result {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    color: #393E46;
 }
